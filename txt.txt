@@ -1,0 +1,13 @@
+   <!-- <h2><%=user.email%></h2>
+   <h2><%=user.password%></h2> -->
+
+
+   module.exports = {
+ 'googleAuth':{
+    'clientID':  '189344492624-4rmb49cdupp398sadlubcefp4purmod7.apps.googleusercontent.com',
+    'clientSecret':'yuCBprzK6MIwheh9Xc95GIQe',
+    'callbackURL':   'http://localhost:5000/auth/google/callback'
+   
+    
+ }
+}

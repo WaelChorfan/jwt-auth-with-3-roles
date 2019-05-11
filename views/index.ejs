@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<head>
+    <%- include ./includes/headScripts %>
+</head>
+
+<body style="padding: 50px 200px 50px 200px;">
+    <div class="row">
+        <div class="col-sm-6 offset-sm-2">
+            <nav class="nav nav-tabs">
+                <a class="nav-item nav-link active" href="#p1" data-toggle="tab">
+                    <i class="fa fa-sign-in"></i>SignIn
+                </a>
+                <a class="nav-item nav-link" href="#p2" data-toggle="tab">
+                    <i class="fa fa-newspaper-o"></i>SignUp
+                </a>
+            </nav>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="p1">
+                    <br>
+                    <br>
+                    <form method="post" action="/login">
+                        <input type="text" name="user[username]">
+                        <input type="password" name="user[password]">
+                        <hr>
+                        <input type="submit" name="btn" value="SignIn">
+                    </form>
+
+                </div>
+                <div class="tab-pane fade" id="p2">
+                    <br>
+                    <br>
+                    <form method="post" action="/login">
+                        <input type="text" name="user[username]">
+                        <input type="password" name="user[password]">
+                        <select name="user[role]">
+                            <option value="admin">Admin</option>
+                            <option value="user">User</option>
+                            <option value="project-manager">PM</option>
+                        </select>
+                        <hr>
+                        <input type="submit" name="btn" value="Register">
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,184 @@
+const express = require('express');
+const jwt = require('jsonwebtoken');
+const app = express()
+var ls = require('local-storage');
+const path = require('path');
+const mongoose = require('mongoose');
+// Parse URL-encoded bodies (as sent by HTML forms)
+app.use(express.urlencoded());
+
+mongoose.Promise = Promise;
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
+
+
+app.get('/api', (req, res) => {
+    res.json({
+        message: 'welcome to the api'
+    });
+})
+
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'ejs');
+
+app.get('/', function (req, res, next) {
+    res.render('login', { title: 'Hello World!' });
+});
+
+
+// app.get('/', (req, res) => {
+
+//     // Requiring fs module in which 
+//     // writeFile function is defined. 
+//     const fs = require('fs')
+//     // Data which will write in a file. 
+//     var util = require('util')
+//     let data = util.inspect(req)
+
+//     // Write data in 'Output.txt' . 
+//     fs.writeFile('Output.txt', data, (err) => {
+//         res.send('data written')
+//         // In case of a error throw err. 
+//         if (err) throw err;
+//     })
+// })
+
+
+
+app.get('/logout', (req, res) => {
+    ls.set('token', null);
+    res.render('login');
+});
+
+
+app.get('/details', verifyToken, (req, res) => {
+
+    jwt.verify(req.token, 'secret', function (err, decoded) {
+        if (err) {
+            //Unauthorized
+            res.sendStatus(401)
+        } else {
+            console.log(decoded);
+            //authorized 
+            res.json({
+                details: decoded.user
+            });
+        }
+    });
+
+})
+
+
+app.get('/name', verifyToken, (req, res) => {
+
+    jwt.verify(req.token, 'secret', function (err, decoded) {
+        if (err) {
+            //Unauthorized
+            res.sendStatus(401)
+        } else {
+            console.log(decoded);
+            //authorized 
+            res.json({
+                name: decoded.user.username
+            });
+        }
+    });
+
+
+
+})
+
+
+//db con
+mongoose.connect('mongodb://localhost/mydb', { useNewUrlParser: true });
+const User = require('./models/personSchema');
+
+
+
+app.post('/sss', (req, res) => {
+    console.log(req.body);
+    const user = new User(req.body.user)
+
+
+    user.save().then(() => { console.log("ok"); })
+
+});
+
+app.post('/login', (req, res) => {
+    User.findOne({ username: req.body.user.username })
+        .then((u) => {
+            if (!u) { res.render('login') }
+            else {
+
+
+                jwt.sign({
+                    user: u
+                }, 'secret', { expiresIn: '1h' }, (err, token) => {
+                    ls.set('token', token);
+                    switch (u.role) {
+                        case 'admin':
+                            res.render('admin')
+                            break;
+                        case 'user':
+                            res.render('user')
+                            break;
+                        default:
+                            res.render('hello', { user: u })
+
+                    }
+                })
+            }
+        })
+
+});
+
+//format of token
+//Authorization : Bearer <access_token>
+
+//middle ware
+// const verifyToken = (req, res, next) => {
+// function verifyToken(req, res, next) {
+//     //get auth header value
+//     const bearerHeader = req.headers['authorization'];
+//     console.log("bearerHeader: " + bearerHeader);
+
+//     //check if bearer is undefined
+//     if (typeof bearerHeader !== 'undefined') {
+
+//         //split at space
+//         const bearer = bearerHeader.split(' ')
+
+//         //get token from array
+//         const bearerToken = bearer[1];
+
+//         //set the token 
+//         req.token = bearerToken
+//         // authenticated
+//         next()
+
+//     } else {
+//         //Forbidden
+//         res.sendStatus(403)
+//     }
+
+// }
+
+function verifyToken(req, res, next) {
+    const token = ls.get('token')
+    if (token) {
+        req.token = token
+        jwt.verify(req.token, 'secret', function (err, decoded) {
+            next()
+        })
+    } else {
+        //Forbidden
+        res.sendStatus(403)
+    }
+
+};
+
+app.listen(5000, () => {
+    console.log('http://localhost:5000');
+});
+
