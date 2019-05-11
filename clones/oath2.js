@@ -16,9 +16,9 @@ const plus = google.plus('v1');
  * Create a new OAuth2 client with the configured keys.
  */
 const oauth2Client = new google.auth.OAuth2(
-    '410667503154-2u93mddi3mis0nit1495crmskm81cmdc.apps.googleusercontent.com',
-    'XZxLhzeISPigLI_1BV6AKUvc',
-    'https://supbank2019.herokuapp.com/auth/google/callback'
+    '********************************************************',
+    '***********************',
+    '***********************auth/google/callback'
 
 );
 
